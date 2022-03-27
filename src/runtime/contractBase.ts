@@ -61,12 +61,14 @@ export type ReturnTypeOfDescriptor<D> = D extends FunctionDescriptor
     : never
   : never;
 
+export type ContractBaseType = {
+  [contracts: string]: {
+    [func: string]: FunctionDescriptor;
+  };
+};
+
 export function defineContract<
-  T extends {
-    [contracts: string]: {
-      [func: string]: FunctionDescriptor;
-    };
-  }
+  T extends ContractBaseType
 >(contracts: T): T {
   return contracts;
 }

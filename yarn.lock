@@ -29,6 +29,11 @@
   dependencies:
     "@stacks/common" "^3.3.0"
 
+"@stacks/stacks-blockchain-api-types@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@stacks/stacks-blockchain-api-types/-/stacks-blockchain-api-types-3.0.2.tgz#f291f4f0cd28b26b9007debd16c688ca6e20a724"
+  integrity sha512-HurLltAqFVP2raQim9iQ6Gf0QH76hvfA22vHBeCf8lcU//4tw4MvFtPxl/MkspH4BqaoM+yqJ7rHpRV9TDgCCg==
+
 "@stacks/transactions@^3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@stacks/transactions/-/transactions-3.3.0.tgz#ccc489196dc406d06271631f28f41937b96de897"
