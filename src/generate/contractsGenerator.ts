@@ -202,7 +202,7 @@ const toMapEntryDescriptorDef = (
 ): FunctionDescriptorDef => {
   return {
     input: toTranscoderDef({ type: entry.key }).def,
-    output: toTranscoderDef({ type: entry.value }).def,
+    output: toTranscoderDef({ type: { optional: entry.value } }).def,
     mode: "mapEntry",
   };
 };
