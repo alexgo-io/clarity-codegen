@@ -68,7 +68,7 @@ export const booleanCV = (value: boolean): BooleanCV => {
   }
 };
 
-export const numberCV: Encoder<number> = (input) => uintCV(Math.floor(input));
+export const numberCV: Encoder<bigint> = (input) => uintCV(input);
 
 export function optional<T>(encoder: Encoder<T>): Encoder<T | undefined> {
   return (value) => {

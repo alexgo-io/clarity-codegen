@@ -44,9 +44,9 @@ export const contractResult: Decoder<string> = result => {
   throw new Error(`Expected principal, got ${result.type}`)
 }
 
-export const intResult: Decoder<number> = result => {
+export const intResult: Decoder<bigint> = result => {
   if (result.type === ClarityType.Int || result.type === ClarityType.UInt) {
-    return Number(result.value)
+    return result.value
   }
   throw new Error(`Expected integer, got ${result.type}`)
 }
