@@ -11,6 +11,7 @@
     "clarity-codegen": "./lib/generate/cli.js"
   },
   "scripts": {
+    "prepare": "yarn build",
     "build": "rm -rf lib && tsc -p tsconfig.json"
   },
   "devDependencies": {
