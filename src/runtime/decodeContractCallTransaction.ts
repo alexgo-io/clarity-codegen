@@ -2,7 +2,6 @@ import { ContractCallTransaction } from "@stacks/stacks-blockchain-api-types";
 import { deserializeCV } from "@stacks/transactions";
 import {
   ContractBaseType,
-  FunctionDescriptor,
   OpenCallFunctionDescriptor,
   ParameterObjOfDescriptor,
   ReturnTypeOfDescriptor,
