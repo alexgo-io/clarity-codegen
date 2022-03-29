@@ -4,7 +4,9 @@ import fetch from "node-fetch";
 import path from "path";
 import { inspect } from "util";
 import {
+  ClarityAbi,
   ClarityAbiFunction,
+  ClarityAbiMap,
   ClarityAbiType,
   isClarityAbiBuffer,
   isClarityAbiList,
@@ -183,11 +185,27 @@ const stringifyTranscoderDef = (res: TranscoderDef): string => {
   return ret;
 };
 
-interface FunctionDescriptorDef {
-  input: { name: string; type: TranscoderDef }[];
-  output: TranscoderDef;
-  mode: "public" | "readonly";
-}
+type FunctionDescriptorDef =
+  | {
+      input: { name: string; type: TranscoderDef }[];
+      output: TranscoderDef;
+      mode: "public" | "readonly";
+    }
+  | {
+      mode: "mapEntry";
+      output: TranscoderDef;
+      input: TranscoderDef;
+    };
+
+const toMapEntryDescriptorDef = (
+  entry: ClarityAbiMap
+): FunctionDescriptorDef => {
+  return {
+    input: toTranscoderDef({ type: entry.key }).def,
+    output: toTranscoderDef({ type: entry.value }).def,
+    mode: "mapEntry",
+  };
+};
 
 const toFunctionDescriptorDef = (
   func: ClarityAbiFunction
@@ -219,20 +237,23 @@ export const generateContractFromAbi = async ({
   packageName: string;
 }): Promise<void> => {
   const url = `${apiHost}/v2/contracts/interface/${principal}/${contractName}`;
-  const interfaceData = (await fetch(url).then((res) => res.json())) as any;
-  const functions: Array<ClarityAbiFunction> = interfaceData.functions;
-
-  if (functions.length === 0) return;
-
-  const funcDefs = functions.reduce((acc, func) => {
+  const interfaceData: ClarityAbi = (await fetch(url).then((res) =>
+    res.json()
+  )) as any;
+  const defs = {} as Record<string, FunctionDescriptorDef>;
+  for (const func of interfaceData.functions) {
     const res = toFunctionDescriptorDef(func);
-    if (res) acc[func.name] = res;
-    return acc;
-  }, {} as Record<string, FunctionDescriptorDef>);
+    if (res) defs[func.name] = res;
+  }
+  for (const mapEntry of interfaceData.maps) {
+    defs[mapEntry.name] = toMapEntryDescriptorDef(mapEntry);
+  }
 
   const transcoderNames = getAllTranscoderName(
-    Object.values(funcDefs).flatMap((funcDef) => [
-      ...funcDef.input.map((i) => i.type),
+    Object.values(defs).flatMap((funcDef) => [
+      ...(funcDef.mode === "mapEntry"
+        ? [funcDef.input]
+        : funcDef.input.map((i) => i.type)),
       funcDef.output,
     ])
   );
@@ -245,13 +266,18 @@ ${transcoderNames.join(",\n")}
 
 export const ${camelCase(contractName)} = defineContract({
 "${contractName}": ${inspect(
-    mapValues(funcDefs, (o) => ({
-      input: o.input.map((i) => ({
-        name: i.name,
-        type: {
-          [inspect.custom]: () => stringifyTranscoderDef(i.type),
-        },
-      })),
+    mapValues(defs, (o) => ({
+      input:
+        o.mode === "mapEntry"
+          ? {
+              [inspect.custom]: () => stringifyTranscoderDef(o.input),
+            }
+          : o.input.map((i) => ({
+              name: i.name,
+              type: {
+                [inspect.custom]: () => stringifyTranscoderDef(i.type),
+              },
+            })),
       output: {
         [inspect.custom]: () => stringifyTranscoderDef(o.output),
       },
