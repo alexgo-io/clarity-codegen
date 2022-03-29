@@ -1,5 +1,4 @@
 import { Transcoder } from "./types";
-import { ClarityValue, deserializeCV } from "@stacks/transactions";
 
 export type MapEntryDescriptor = {
   mode: "mapEntry";

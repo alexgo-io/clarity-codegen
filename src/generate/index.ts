@@ -1,4 +1,4 @@
-import { YBatch, YQueue } from "yqueue";
+import { YBatch } from "yqueue";
 import {
   contractGenerator,
   generateContractFromAbi,
