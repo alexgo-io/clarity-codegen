@@ -1,6 +1,12 @@
 import { Transcoder } from "./types";
 import { ClarityValue, deserializeCV } from "@stacks/transactions";
 
+export type MapEntryDescriptor = {
+  mode: "mapEntry";
+  input: Transcoder<any>;
+  output: Transcoder<any>;
+};
+
 export type ReadonlyFunctionDescriptor = {
   mode: "readonly";
   input: readonly { name: string; type: Transcoder<any> }[];
@@ -14,6 +20,7 @@ export type OpenCallFunctionDescriptor = {
 };
 
 export type FunctionDescriptor =
+  | MapEntryDescriptor
   | ReadonlyFunctionDescriptor
   | OpenCallFunctionDescriptor;
 
@@ -37,6 +44,7 @@ type ParameterObjOfDescriptorPickType<T, N> = T extends {
 }
   ? R
   : never;
+
 export type ParameterObjOfDescriptor<D> = D extends FunctionDescriptor
   ? D extends {
       input: infer Input;
@@ -48,6 +56,8 @@ export type ParameterObjOfDescriptor<D> = D extends FunctionDescriptor
             K
           >;
         }
+      : Input extends Transcoder<infer U>
+      ? U
       : never
     : never
   : never;
@@ -70,27 +80,4 @@ export type ContractBaseType = {
 
 export function defineContract<T extends ContractBaseType>(contracts: T): T {
   return contracts;
-}
-
-export function processContractCall<
-  Contracts extends ContractBaseType,
-  T extends keyof Contracts,
-  F extends keyof Contracts[T],
-  Descriptor extends Contracts[T][F]
->(contracts: Contracts, contract: T, functionName: F) {
-  const functionDescriptor = contracts[contract][
-    functionName
-  ] as any as FunctionDescriptor;
-  return {
-    encodeInput: (
-      args: ParameterObjOfDescriptor<Descriptor>
-    ): ClarityValue[] => {
-      return functionDescriptor.input.map((arg) =>
-        arg.type.encode(args[arg.name])
-      );
-    },
-    decodeOutput: (args: ClarityValue): ReturnTypeOfDescriptor<Descriptor> => {
-      return functionDescriptor.output.decode(args);
-    },
-  };
 }

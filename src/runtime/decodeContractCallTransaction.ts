@@ -3,11 +3,14 @@ import { deserializeCV } from "@stacks/transactions";
 import {
   ContractBaseType,
   FunctionDescriptor,
+  OpenCallFunctionDescriptor,
   ParameterObjOfDescriptor,
   ReturnTypeOfDescriptor,
 } from "./contractBase";
 
-export type ContractCallTransactionResultMap<Contracts extends ContractBaseType> = {
+export type ContractCallTransactionResultMap<
+  Contracts extends ContractBaseType
+> = {
   [C in keyof Contracts]: {
     [F in keyof Contracts[C]]: {
       contractName: C;
@@ -18,9 +21,10 @@ export type ContractCallTransactionResultMap<Contracts extends ContractBaseType>
   };
 };
 
-export type ContractCallTransactionResult<Contracts extends ContractBaseType> = {
-  [K in keyof ContractCallTransactionResultMap<Contracts>]: ContractCallTransactionResultMap<Contracts>[K][keyof ContractCallTransactionResultMap<Contracts>[K]];
-}[keyof ContractCallTransactionResultMap<Contracts>];
+export type ContractCallTransactionResult<Contracts extends ContractBaseType> =
+  {
+    [K in keyof ContractCallTransactionResultMap<Contracts>]: ContractCallTransactionResultMap<Contracts>[K][keyof ContractCallTransactionResultMap<Contracts>[K]];
+  }[keyof ContractCallTransactionResultMap<Contracts>];
 
 export function decodeContractCallTransaction<
   Contracts extends ContractBaseType
@@ -64,14 +68,16 @@ export function decodeSpecifiedContractCallTransaction<
   contractOrType: T,
   functionName: F,
   tx: ContractCallTransaction
-): {
-  args: ParameterObjOfDescriptor<Contracts[T][F]>;
-  result: ReturnTypeOfDescriptor<Contracts[T][F]>;
-  raw: ContractCallTransaction;
-} {
+): Contracts[T][F] extends OpenCallFunctionDescriptor
+  ? {
+      args: ParameterObjOfDescriptor<Contracts[T][F]>;
+      result: ReturnTypeOfDescriptor<Contracts[T][F]>;
+      raw: ContractCallTransaction;
+    }
+  : never {
   const functionDescriptor = contracts[contractOrType][
     functionName
-  ] as any as FunctionDescriptor;
+  ] as any as OpenCallFunctionDescriptor;
 
   const args = functionDescriptor.input.reduce(
     (acc, arg, index) => ({
@@ -87,5 +93,5 @@ export function decodeSpecifiedContractCallTransaction<
     deserializeCV(tx.tx_result.hex)
   );
 
-  return { args: args as any, result, raw: tx };
+  return { args: args, result, raw: tx } as any;
 }
