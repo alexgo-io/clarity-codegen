@@ -1,3 +1,4 @@
+import { YBatch, YQueue } from "yqueue";
 import {
   contractGenerator,
   generateContractFromAbi,
@@ -11,16 +12,21 @@ export async function generateContracts(
   name: string,
   packageName: string = "clarity-codegen"
 ) {
+  const batch = new YBatch({ concurrency: 16 });
   for (const cname of contracts) {
-    console.log(`Generating contract ${principal}.${cname}`);
-    await generateContractFromAbi({
-      apiHost: apiHost,
-      principal: principal,
-      contractName: cname,
-      output,
-      packageName,
-    }).catch(console.error);
+    await batch.add(async () => {
+      console.log(`Generating contract ${principal}.${cname}`);
+      await generateContractFromAbi({
+        apiHost: apiHost,
+        principal: principal,
+        contractName: cname,
+        output,
+        packageName,
+      });
+      console.log(`Generated contract ${principal}.${cname}`);
+    });
   }
+  await batch.failFast();
 
   await contractGenerator({
     contracts: contracts,

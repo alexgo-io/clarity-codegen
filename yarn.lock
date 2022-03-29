@@ -396,3 +396,8 @@ yargs@^17.4.0:
     string-width "^4.2.3"
     y18n "^5.0.5"
     yargs-parser "^21.0.0"
+
+yqueue@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/yqueue/-/yqueue-1.0.0.tgz#ab6b3f7f0a69b72d8fa85df6ff60939f16da2966"
+  integrity sha512-aful6WQ7007eUgGdv8GqVQ36+dJn3Fv39+D5qzogVwSkAjC4f+DL/CqPoyHwX5huTBZEmKOJmn1m055YxvitUA==
