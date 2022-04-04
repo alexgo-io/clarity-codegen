@@ -7,7 +7,7 @@ import { Decoder, UnboxDecoder } from "./types"
 
 export class ClarityError extends Error {
   constructor(readonly code: number) {
-    super()
+    super(`ClarityError: ${code}`)
   }
 }
 
