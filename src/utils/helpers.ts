@@ -1,4 +1,4 @@
-import {Response} from "../runtime/types";
+import { Response } from "../runtime/types";
 
 export function mapValues<T extends Record<string, any>, VO>(
   obj: T,
@@ -11,7 +11,7 @@ export function mapValues<T extends Record<string, any>, VO>(
 }
 
 export function assertNever(x: never): never {
-    throw new Error("Unexpected object: " + x);
+  throw new Error("Unexpected object: " + x);
 }
 
 export const unwrapResponse = <T>(response: Response<T>): T => {

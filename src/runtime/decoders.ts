@@ -3,7 +3,7 @@ import {
   ClarityType,
   ClarityValue,
 } from "@stacks/transactions";
-import {Decoder, Response, UnboxDecoder} from "./types";
+import { Decoder, Response, UnboxDecoder } from "./types";
 
 export class ClarityError extends Error {
   constructor(readonly code: number) {

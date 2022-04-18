@@ -14,10 +14,10 @@ import {
   tupleCV,
   TupleCV,
   uintCV,
+  stringUtf8CV,
 } from "@stacks/transactions";
-import {Encoder, Response, UnboxEncoder} from "./types";
+import { Encoder, Response, UnboxEncoder } from "./types";
 import { ClarityError } from "./decoders";
-import { stringCV } from "@stacks/transactions/dist/clarity/types/stringCV";
 
 export function tupleEncoder<P extends Record<string, Encoder<any>>>(
   decorators: P
@@ -50,7 +50,7 @@ export function responseSimpleEncoder<T>(
     if (value.error instanceof ClarityError) {
       return responseErrorCV(uintCV(value.error.code));
     }
-    return responseErrorCV(stringCV(value.error.message, "utf8"));
+    return responseErrorCV(stringUtf8CV(value.error.message));
   };
 }
 
