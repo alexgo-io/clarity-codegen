@@ -1,4 +1,4 @@
-import { bufferCV, noneCV, stringUtf8CV } from "@stacks/transactions";
+import {bufferCV, noneCV, stringUtf8CV} from "@stacks/transactions";
 import {
   boolResult,
   bufferResult,
@@ -20,7 +20,7 @@ import {
   responseSimpleEncoder,
   tupleEncoder,
 } from "./encoders";
-import { Decoder, Encoder, Transcoder, UnboxTranscoder } from "./types";
+import {Decoder, Encoder, Response, Transcoder, UnboxTranscoder} from "./types";
 import {mapValues} from "../utils/helpers";
 
 export function transcoders<T>(constructOptions: {
@@ -92,6 +92,7 @@ export const optionalT = <T>(
     decode: optionalDecoder(someTranscoder.decode),
   });
 };
+
 export const noneT = transcoders({
   encode: noneCV,
   decode: noneResult,
@@ -99,7 +100,7 @@ export const noneT = transcoders({
 
 export const responseSimpleT = <TOK>(
   okValueTransducer: Transcoder<TOK>
-): Transcoder<TOK> => {
+): Transcoder<Response<TOK>> => {
   return transcoders({
     encode: responseSimpleEncoder(okValueTransducer.encode),
     decode: responseSimpleDecoder(okValueTransducer.decode),

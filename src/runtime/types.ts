@@ -22,3 +22,20 @@ export type UnboxTranscoder<T extends Transcoder<any>> = T extends Transcoder<
 >
   ? R
   : never;
+
+export type Response<T> =
+  | {
+      type: "success";
+      value: T;
+    }
+  | {
+      type: "error";
+      error: Error;
+    };
+
+export type UnboxResponse<T extends Response<any>> = T extends {
+  type: "success";
+  value: infer R;
+}
+  ? R
+  : never;

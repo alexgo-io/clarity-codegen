@@ -6,6 +6,7 @@ import {
   listCV,
   noneCV,
   PrincipalCV,
+  responseErrorCV,
   responseOkCV,
   someCV,
   standardPrincipalCV,
@@ -14,7 +15,9 @@ import {
   TupleCV,
   uintCV,
 } from "@stacks/transactions";
-import { Encoder, UnboxEncoder } from "./types";
+import {Encoder, Response, UnboxEncoder} from "./types";
+import { ClarityError } from "./decoders";
+import { stringCV } from "@stacks/transactions/dist/clarity/types/stringCV";
 
 export function tupleEncoder<P extends Record<string, Encoder<any>>>(
   decorators: P
@@ -37,9 +40,17 @@ export function listEncoder<T>(encoder: Encoder<T>): Encoder<T[]> {
   };
 }
 
-export function responseSimpleEncoder<T>(success: Encoder<T>): Encoder<T> {
-  return (value: T) => {
-    return responseOkCV(success(value));
+export function responseSimpleEncoder<T>(
+  success: Encoder<T>
+): Encoder<Response<T>> {
+  return (value) => {
+    if (value.type === "success") {
+      return responseOkCV(success(value.value));
+    }
+    if (value.error instanceof ClarityError) {
+      return responseErrorCV(uintCV(value.error.code));
+    }
+    return responseErrorCV(stringCV(value.error.message, "utf8"));
   };
 }
 
