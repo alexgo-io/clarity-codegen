@@ -213,11 +213,11 @@ const toMapEntryDescriptorDef = (
   };
 };
 
-const toDataVarDescriptorDef = (
+const toVariableDescriptorDef = (
   entry: ClarityAbiVariable
 ): ContractEntryDescriptorDef => {
   return {
-    output: toTranscoderDef({ type: { optional: entry.type } }).def,
+    output: toTranscoderDef({ type: entry.type }).def,
     input: ["noneT"],
     mode: entry.access,
   };
@@ -264,7 +264,8 @@ export const generateContractFromAbi = async ({
     defs[mapEntry.name] = toMapEntryDescriptorDef(mapEntry);
   }
   for (const varEntry of interfaceData.variables) {
-    defs[varEntry.name] = toDataVarDescriptorDef(varEntry);
+    if (varEntry.access !== "variable") continue;
+    defs[varEntry.name] = toVariableDescriptorDef(varEntry);
   }
 
   const transcoderNames = getAllTranscoderName(
