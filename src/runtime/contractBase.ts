@@ -6,6 +6,12 @@ export type MapEntryDescriptor = {
   output: Transcoder<any>;
 };
 
+export type VariableDescriptor = {
+  mode: "constant" | "variable";
+  input: Transcoder<any>;
+  output: Transcoder<any>;
+};
+
 export type ReadonlyFunctionDescriptor = {
   mode: "readonly";
   input: readonly { name: string; type: Transcoder<any> }[];
@@ -18,12 +24,13 @@ export type OpenCallFunctionDescriptor = {
   output: Transcoder<any>;
 };
 
-export type FunctionDescriptor =
+export type ContractEntryDescriptor =
   | MapEntryDescriptor
+  | VariableDescriptor
   | ReadonlyFunctionDescriptor
   | OpenCallFunctionDescriptor;
 
-export type ParametersOfDescriptor<D> = D extends FunctionDescriptor
+export type ParametersOfDescriptor<D> = D extends ContractEntryDescriptor
   ? D extends {
       input: infer Input;
     }
@@ -44,7 +51,7 @@ type ParameterObjOfDescriptorPickType<T, N> = T extends {
   ? R
   : never;
 
-export type ParameterObjOfDescriptor<D> = D extends FunctionDescriptor
+export type ParameterObjOfDescriptor<D> = D extends ContractEntryDescriptor
   ? D extends {
       input: infer Input;
     }
@@ -61,7 +68,7 @@ export type ParameterObjOfDescriptor<D> = D extends FunctionDescriptor
     : never
   : never;
 
-export type ReturnTypeOfDescriptor<D> = D extends FunctionDescriptor
+export type ReturnTypeOfDescriptor<D> = D extends ContractEntryDescriptor
   ? D extends {
       output: infer Output;
     }
@@ -73,7 +80,7 @@ export type ReturnTypeOfDescriptor<D> = D extends FunctionDescriptor
 
 export type ContractBaseType = {
   [contracts: string]: {
-    [func: string]: FunctionDescriptor;
+    [func: string]: ContractEntryDescriptor;
   };
 };
 
