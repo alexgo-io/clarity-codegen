@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import { camelCase } from "lodash";
-import fetch from "node-fetch";
 import path from "path";
 import { inspect } from "util";
 import {
@@ -18,6 +17,7 @@ import {
   isClarityAbiTuple,
 } from "./contractAbi";
 import { assertNever, mapValues } from "../utils/helpers";
+import axios from "axios";
 
 type TranscoderDefArgument = TranscoderDef | Record<string, TranscoderDef>;
 type TranscoderDef = [string, ...TranscoderDefArgument[]];
@@ -237,9 +237,8 @@ export const generateContractFromAbi = async ({
   packageName: string;
 }): Promise<void> => {
   const url = `${apiHost}/v2/contracts/interface/${principal}/${contractName}`;
-  const interfaceData: ClarityAbi = (await fetch(url).then((res) =>
-    res.json()
-  )) as any;
+  const response = await axios.get(url);
+  const interfaceData: ClarityAbi = response.data;
   const defs = {} as Record<string, FunctionDescriptorDef>;
   for (const func of interfaceData.functions) {
     const res = toFunctionDescriptorDef(func);
