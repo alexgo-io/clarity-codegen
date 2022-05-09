@@ -270,9 +270,15 @@ export const generateContractFromAbi = async ({
 
   const transcoderNames = getAllTranscoderName(
     Object.values(defs).flatMap((def) => [
-      ...(def.mode === "readonly" || def.mode === "public"
-        ? def.input.map((i) => i.type)
-        : [def.input as TranscoderDef]),
+      ...(function () {
+        switch (def.mode) {
+          case "readonly":
+          case "public":
+            return def.input.map((i) => i.type);
+          default:
+            return [def.input];
+        }
+      })(),
       def.output,
     ])
   );
@@ -286,18 +292,22 @@ ${transcoderNames.join(",\n")}
 export const ${camelCase(contractName)} = defineContract({
 "${contractName}": ${inspect(
     mapValues(defs, (o) => ({
-      input:
-        o.mode === "readonly" || o.mode === "public"
-          ? o.input.map((i) => ({
+      input: (function () {
+        switch (o.mode) {
+          case "readonly":
+          case "public":
+            return o.input.map((i) => ({
               name: i.name,
               type: {
                 [inspect.custom]: () => stringifyTranscoderDef(i.type),
               },
-            }))
-          : {
-              [inspect.custom]: () =>
-                stringifyTranscoderDef(o.input as TranscoderDef),
-            },
+            }));
+          default:
+            return {
+              [inspect.custom]: () => stringifyTranscoderDef(o.input),
+            };
+        }
+      })(),
       output: {
         [inspect.custom]: () => stringifyTranscoderDef(o.output),
       },
