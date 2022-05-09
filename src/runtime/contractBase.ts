@@ -8,7 +8,7 @@ export type MapEntryDescriptor = {
 
 export type VariableDescriptor = {
   mode: "constant" | "variable";
-  input: Transcoder<any>;
+  input: Transcoder<void>;
   output: Transcoder<any>;
 };
 

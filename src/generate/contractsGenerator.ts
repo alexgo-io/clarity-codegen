@@ -186,7 +186,7 @@ const stringifyTranscoderDef = (res: TranscoderDef): string => {
   return ret;
 };
 
-type FunctionDescriptorDef =
+type ContractEntryDescriptorDef =
   | {
       input: { name: string; type: TranscoderDef }[];
       output: TranscoderDef;
@@ -205,7 +205,7 @@ type FunctionDescriptorDef =
 
 const toMapEntryDescriptorDef = (
   entry: ClarityAbiMap
-): FunctionDescriptorDef => {
+): ContractEntryDescriptorDef => {
   return {
     input: toTranscoderDef({ type: entry.key }).def,
     output: toTranscoderDef({ type: { optional: entry.value } }).def,
@@ -215,7 +215,7 @@ const toMapEntryDescriptorDef = (
 
 const toDataVarDescriptorDef = (
   entry: ClarityAbiVariable
-): FunctionDescriptorDef => {
+): ContractEntryDescriptorDef => {
   return {
     output: toTranscoderDef({ type: { optional: entry.type } }).def,
     input: ["noneT"],
@@ -225,7 +225,7 @@ const toDataVarDescriptorDef = (
 
 const toFunctionDescriptorDef = (
   func: ClarityAbiFunction
-): void | FunctionDescriptorDef => {
+): void | ContractEntryDescriptorDef => {
   if (func.access === "private") return;
 
   return {
@@ -255,7 +255,7 @@ export const generateContractFromAbi = async ({
   const url = `${apiHost}/v2/contracts/interface/${principal}/${contractName}`;
   const response = await axios.get(url);
   const interfaceData: ClarityAbi = response.data;
-  const defs = {} as Record<string, FunctionDescriptorDef>;
+  const defs = {} as Record<string, ContractEntryDescriptorDef>;
   for (const func of interfaceData.functions) {
     const res = toFunctionDescriptorDef(func);
     if (res) defs[func.name] = res;
@@ -269,11 +269,9 @@ export const generateContractFromAbi = async ({
 
   const transcoderNames = getAllTranscoderName(
     Object.values(defs).flatMap((def) => [
-      ...(def.mode === "mapEntry"
-        ? [def.input]
-        : def.mode === "readonly" || def.mode === "public"
+      ...(def.mode === "readonly" || def.mode === "public"
         ? def.input.map((i) => i.type)
-        : [["noneT"] as TranscoderDef]),
+        : [def.input as TranscoderDef]),
       def.output,
     ])
   );
