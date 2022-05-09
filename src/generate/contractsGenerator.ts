@@ -7,6 +7,7 @@ import {
   ClarityAbiFunction,
   ClarityAbiMap,
   ClarityAbiType,
+  ClarityAbiVariable,
   isClarityAbiBuffer,
   isClarityAbiList,
   isClarityAbiOptional,
@@ -195,6 +196,11 @@ type FunctionDescriptorDef =
       mode: "mapEntry";
       output: TranscoderDef;
       input: TranscoderDef;
+    }
+  | {
+      mode: "variable" | "constant";
+      input: ["noneT"];
+      output: TranscoderDef;
     };
 
 const toMapEntryDescriptorDef = (
@@ -204,6 +210,16 @@ const toMapEntryDescriptorDef = (
     input: toTranscoderDef({ type: entry.key }).def,
     output: toTranscoderDef({ type: { optional: entry.value } }).def,
     mode: "mapEntry",
+  };
+};
+
+const toDataVarDescriptorDef = (
+  entry: ClarityAbiVariable
+): FunctionDescriptorDef => {
+  return {
+    output: toTranscoderDef({ type: { optional: entry.type } }).def,
+    input: ["noneT"],
+    mode: entry.access,
   };
 };
 
@@ -247,13 +263,18 @@ export const generateContractFromAbi = async ({
   for (const mapEntry of interfaceData.maps) {
     defs[mapEntry.name] = toMapEntryDescriptorDef(mapEntry);
   }
+  for (const varEntry of interfaceData.variables) {
+    defs[varEntry.name] = toDataVarDescriptorDef(varEntry);
+  }
 
   const transcoderNames = getAllTranscoderName(
-    Object.values(defs).flatMap((funcDef) => [
-      ...(funcDef.mode === "mapEntry"
-        ? [funcDef.input]
-        : funcDef.input.map((i) => i.type)),
-      funcDef.output,
+    Object.values(defs).flatMap((def) => [
+      ...(def.mode === "mapEntry"
+        ? [def.input]
+        : def.mode === "readonly" || def.mode === "public"
+        ? def.input.map((i) => i.type)
+        : [["noneT"] as TranscoderDef]),
+      def.output,
     ])
   );
 
@@ -267,16 +288,17 @@ export const ${camelCase(contractName)} = defineContract({
 "${contractName}": ${inspect(
     mapValues(defs, (o) => ({
       input:
-        o.mode === "mapEntry"
-          ? {
-              [inspect.custom]: () => stringifyTranscoderDef(o.input),
-            }
-          : o.input.map((i) => ({
+        o.mode === "readonly" || o.mode === "public"
+          ? o.input.map((i) => ({
               name: i.name,
               type: {
                 [inspect.custom]: () => stringifyTranscoderDef(i.type),
               },
-            })),
+            }))
+          : {
+              [inspect.custom]: () =>
+                stringifyTranscoderDef(o.input as TranscoderDef),
+            },
       output: {
         [inspect.custom]: () => stringifyTranscoderDef(o.output),
       },
