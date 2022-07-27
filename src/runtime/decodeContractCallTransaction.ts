@@ -40,7 +40,9 @@ export function decodeContractCallTransaction<
 
   if (!(tx.contract_call.function_name in contracts[contractName])) {
     throw new Error(
-      `[decodeContractCallTransaction] unknown function name ${contractName}.${tx.contract_call.function_name}`
+      `[decodeContractCallTransaction] unknown function name ${String(
+        contractName
+      )}.${tx.contract_call.function_name}`
     );
   }
   const functionName = tx.contract_call

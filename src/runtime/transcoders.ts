@@ -6,7 +6,7 @@ import {
   listDecoder,
   noneResult,
   optionalDecoder,
-  principleResult,
+  principalResult,
   responseSimpleDecoder,
   stringResult,
   tupleDecoder,
@@ -58,7 +58,7 @@ export const bufferT = transcoders({
 
 export const principalT = transcoders({
   encode: principalCV,
-  decode: principleResult,
+  decode: principalResult,
 });
 
 export const listT = <T>(
