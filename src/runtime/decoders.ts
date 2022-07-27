@@ -21,7 +21,7 @@ export const boolResult: Decoder<boolean> = (result) => {
   throw new Error(`Expected integer, got ${result.type}`);
 };
 
-export const principleResult: Decoder<string> = (result) => {
+export const principalResult: Decoder<string> = (result) => {
   if (result.type === ClarityType.PrincipalStandard) {
     return addressResult(result);
   } else if (result.type === ClarityType.PrincipalContract) {
@@ -39,7 +39,7 @@ export const addressResult: Decoder<string> = (result) => {
 
 export const contractResult: Decoder<string> = (result) => {
   if (result.type === ClarityType.PrincipalContract) {
-    return result.contractName.content;
+    return `${addressToString(result.address)}.${result.contractName.content}`;
   }
   throw new Error(`Expected principal, got ${result.type}`);
 };
