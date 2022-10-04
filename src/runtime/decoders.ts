@@ -61,7 +61,7 @@ export const stringResult: Decoder<string> = (result) => {
   throw new Error(`Expected string, got ${result.type}`);
 };
 
-export const bufferResult: Decoder<Buffer> = (result) => {
+export const bufferResult: Decoder<Uint8Array> = (result) => {
   if (result.type === ClarityType.Buffer) {
     return result.buffer;
   }
