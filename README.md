@@ -1,15 +1,22 @@
 ## Clarity Codegen
 
-TypeScript codegen from clarity contract Abi
+Generate TypeScript code from Clarity contract ABI.
 
 ## Usage
 
+Install the package using the following command:
+
 ```shell
 yarn add clarity-codegen
+```
+
+You can generate TypeScript code for Clarity contracts using the CLI:
+
+```shell
 yarn clarity-codegen --apiHost https://stacks-node-api.alexlab.co --principal SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9 --contracts alex-reserve-pool alex-launchpad-v1-1 --output ./
 ```
 
-You can also run codegen in JS
+Alternatively, you can run codegen in JavaScript:
 
 ```typescript
 import { generateContracts } from "clarity-codegen/lib/generate";
@@ -31,10 +38,9 @@ import {
 })().catch(console.error);
 ```
 
-### Encode / Decode clarity value
+### Encoding and Decoding Clarity Values
 
-`processContractCall` will give you strong typed `encodeInput` and `decodeOutput`,
-which can be used to encode and decode the input and output of a contract call.
+`processContractCall` provides strongly typed `encodeInput` and `decodeOutput` functions, which can be used to encode and decode the input and output of a contract call.
 
 Example:
 
@@ -59,20 +65,20 @@ export const callPublic = <
     AlexContracts,
     contractOrType,
     functionName
-  )
-  const input = contractCall.encodeInput(args)
-  // broadcast public contract or send readonly call
-  const output = contractCall.decodeOutput(response.output)
-  return output
+  );
+  const input = contractCall.encodeInput(args);
+  // Broadcast public contract or send readonly call
+  const output = contractCall.decodeOutput(response.output);
+  return output;
 };
 ```
 
-### Process history transactions
+### Processing Historical Transactions
 
-use `decodeContractCallTransaction` to decode the transaction use it with type narrowing
+Use `decodeContractCallTransaction` to decode transactions and apply type narrowing:
 
 ```typescript
-const historicalTransaction: ContractCallTransaction = null as any; // read from server
+const historicalTransaction: ContractCallTransaction = null as any; // Read from server
 const decodedTx = decodeContractCallTransaction(
   AlexContracts,
   historicalTransaction
@@ -87,10 +93,10 @@ if (
 }
 ```
 
-use `decodeSpecifiedContractCallTransaction` to decode the transaction with specific contract and function
+Use `decodeSpecifiedContractCallTransaction` to decode transactions with a specific contract and function:
 
 ```typescript
-const historicalTransaction: ContractCallTransaction = null as any; // read from server
+const historicalTransaction: ContractCallTransaction = null as any; // Read from server
 const result = decodeSpecifiedContractCallTransaction(
   AlexContracts,
   "alex-launchpad-v1-1",
@@ -101,4 +107,30 @@ result.args.tickets;
 result.result.start;
 ```
 
+## License
 
+This project is licensed under the MIT License.
+
+```
+MIT License
+
+Copyright (c) 2023 alexgo-io
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
