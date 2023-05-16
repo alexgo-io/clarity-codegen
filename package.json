@@ -1,6 +1,6 @@
 {
   "name": "clarity-codegen",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
@@ -15,18 +15,18 @@
     "build": "rm -rf lib && tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "@stacks/transactions": "^5.0.0",
-    "@types/lodash": "^4.14.186",
-    "@types/node": "^18.8.1",
-    "@types/yargs": "^17.0.13",
-    "prettier": "^2.7.1",
-    "typescript": "^4.8.4"
+    "@stacks/transactions": "^6.5.2",
+    "@types/lodash": "^4.14.194",
+    "@types/node": "^20.1.5",
+    "@types/yargs": "^17.0.24",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@stacks/stacks-blockchain-api-types": "^5.0.1",
-    "axios": "^0.27.2",
+    "@stacks/stacks-blockchain-api-types": "^7.1.10",
+    "axios": "^1.4.0",
     "lodash": "^4.17.21",
-    "yargs": "^17.6.0",
+    "yargs": "^17.7.2",
     "yqueue": "^1.0.1"
   },
   "peerDependencies": {
