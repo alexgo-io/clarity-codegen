@@ -44,8 +44,12 @@ const toTranscoderDef = ({
     }
   }
 
-  if (isClarityAbiStringUtf8(type) || isClarityAbiStringAscii(type)) {
+  if (isClarityAbiStringUtf8(type)) {
     return { def: ["stringT"] };
+  }
+
+  if (isClarityAbiStringAscii(type)) {
+    return { def: ["stringAsciiT"] };
   }
 
   if (isClarityAbiBuffer(type)) {

@@ -1,4 +1,4 @@
-import { bufferCV, noneCV, stringUtf8CV } from "@stacks/transactions";
+import {bufferCV, noneCV, stringAsciiCV, stringUtf8CV} from "@stacks/transactions";
 import {
   boolResult,
   bufferResult,
@@ -43,6 +43,11 @@ export const numberT = transcoders({
 
 export const stringT = transcoders({
   encode: stringUtf8CV,
+  decode: stringResult,
+});
+
+export const stringAsciiT = transcoders({
+  encode: stringAsciiCV,
   decode: stringResult,
 });
 
