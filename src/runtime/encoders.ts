@@ -13,7 +13,8 @@ import {
   trueCV,
   tupleCV,
   TupleCV,
-  uintCV,
+  uintCV as _uintCV,
+  intCV as _intCV,
   stringUtf8CV,
 } from "@stacks/transactions";
 import { Encoder, Response, UnboxEncoder } from "./types";
@@ -48,7 +49,7 @@ export function responseSimpleEncoder<T>(
       return responseOkCV(success(value.value));
     }
     if (value.error instanceof ClarityError) {
-      return responseErrorCV(uintCV(value.error.code));
+      return responseErrorCV(_uintCV(value.error.code));
     }
     return responseErrorCV(stringUtf8CV(value.error.message));
   };
@@ -79,7 +80,8 @@ export const booleanCV = (value: boolean): BooleanCV => {
   }
 };
 
-export const numberCV: Encoder<bigint> = (input) => uintCV(input);
+export const uintCV: Encoder<bigint> = (input) => _uintCV(input);
+export const intCV: Encoder<bigint> = (input) => _intCV(input);
 
 export function optional<T>(encoder: Encoder<T>): Encoder<T | undefined> {
   return (value) => {

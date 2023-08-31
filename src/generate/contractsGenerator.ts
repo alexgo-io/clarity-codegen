@@ -31,8 +31,10 @@ const toTranscoderDef = ({
   type: ClarityAbiType;
 }): { def: TranscoderDef } => {
   if (isClarityAbiPrimitive(type)) {
-    if (type === "uint128" || type === "int128") {
-      return { def: ["numberT"] };
+    if (type === "uint128") {
+      return {def: ["uintT"]};
+    } else if (type === "int128") {
+      return { def: ["intT"] };
     } else if (type === "bool") {
       return { def: ["booleanT"] };
     } else if (type === "principal" || type === "trait_reference") {

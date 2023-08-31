@@ -14,11 +14,11 @@ import {
 import {
   booleanCV,
   listEncoder,
-  numberCV,
+  uintCV,
   optional,
   principalCV,
   responseSimpleEncoder,
-  tupleEncoder,
+  tupleEncoder, intCV,
 } from "./encoders";
 import {
   Decoder,
@@ -36,8 +36,13 @@ export function transcoders<T>(constructOptions: {
   return constructOptions;
 }
 
-export const numberT = transcoders({
-  encode: numberCV,
+export const intT = transcoders({
+  encode: intCV,
+  decode: intResult,
+});
+
+export const uintT = transcoders({
+  encode: uintCV,
   decode: intResult,
 });
 
