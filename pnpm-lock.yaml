@@ -9,7 +9,7 @@ dependencies:
     specifier: ^7.1.10
     version: 7.1.10
   axios:
-    specifier: ^1.4.0
+    specifier: 1.4.0
     version: 1.4.0
   lodash:
     specifier: ^4.17.21
