@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@stacks/stacks-blockchain-api-types": "^7.1.10",
-    "axios": "1.4.0",
+    "axios": "^1.5.0",
     "lodash": "^4.17.21",
     "yargs": "^17.7.2",
     "yqueue": "^1.0.1"
