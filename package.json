@@ -2,9 +2,11 @@
   "name": "clarity-codegen",
   "version": "0.2.6",
   "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
-    "lib/"
+    "lib/",
+    "dist/"
   ],
   "license": "MIT",
   "bin": {
@@ -12,7 +14,7 @@
   },
   "scripts": {
     "prepare": "pnpm run build",
-    "build": "rm -rf lib && tsc -p tsconfig.json"
+    "build": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json"
   },
   "devDependencies": {
     "@stacks/transactions": "^6.5.2",
