@@ -1,6 +1,6 @@
 {
   "name": "clarity-codegen",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "./lib/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,12 +19,12 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import":  "./dist/index.js",
+      "import": "./dist/index.js",
       "require": "./lib/index.js"
     },
     "./generate": {
       "types": "./dist/generate/index.d.ts",
-      "import":  "./dist/generate/index.js",
+      "import": "./dist/generate/index.js",
       "require": "./lib/generate/index.js"
     }
   },
