@@ -16,6 +16,18 @@
     "prepare": "pnpm run build",
     "build": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import":  "./dist/index.js",
+      "require": "./lib/index.js"
+    },
+    "./generate": {
+      "types": "./dist/generate/index.d.ts",
+      "import":  "./dist/generate/index.js",
+      "require": "./lib/generate/index.js"
+    }
+  },
   "devDependencies": {
     "@stacks/transactions": "^6.5.2",
     "@types/lodash": "^4.14.194",
