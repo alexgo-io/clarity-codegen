@@ -26,6 +26,11 @@
       "types": "./dist/generate/index.d.ts",
       "import": "./dist/generate/index.js",
       "require": "./lib/generate/index.js"
+    },
+    "./lib/generate": {
+      "types": "./dist/generate/index.d.ts",
+      "import": "./dist/generate/index.js",
+      "require": "./lib/generate/index.js"
     }
   },
   "devDependencies": {
