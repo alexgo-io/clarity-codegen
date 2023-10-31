@@ -250,6 +250,7 @@ export const generateContractFromAbi = async ({
   apiHost,
   output,
   packageName,
+  contractOverwrites,
 }: {
   contractName: string;
   aliasContractName?: string;
@@ -257,8 +258,9 @@ export const generateContractFromAbi = async ({
   apiHost: string;
   output: string;
   packageName: string;
+  contractOverwrites: {[from: string]: string}
 }): Promise<void> => {
-  const url = `${apiHost}/v2/contracts/interface/${principal}/${contractName}`;
+  const url = `${apiHost}/v2/contracts/interface/${principal}/${contractOverwrites[contractName] ?? contractName}`;
   const response = await axios.get(url);
   const interfaceData: ClarityAbi = response.data;
   const defs = {} as Record<string, ContractEntryDescriptorDef>;

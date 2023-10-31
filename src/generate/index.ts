@@ -10,7 +10,8 @@ export async function generateContracts(
   contracts: string[],
   output: string,
   name: string,
-  packageName: string = "clarity-codegen"
+  packageName: string = "clarity-codegen",
+  contractOverwrites: {[from: string]: string} = {}
 ) {
   const batch = new YBatch({ concurrency: 16 });
   for (const cname of contracts) {
@@ -22,6 +23,7 @@ export async function generateContracts(
         contractName: cname,
         output,
         packageName,
+        contractOverwrites
       });
       console.log(`Generated contract ${principal}.${cname}`);
     });
