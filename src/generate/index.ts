@@ -5,8 +5,8 @@ import {
 } from "./contractsGenerator";
 
 export async function generateContracts(
-  apiHost: string,
-  principal: string,
+  apiHost: string | ((contract: string) => string),
+  principal: string | ((contract: string) => string),
   contracts: string[],
   output: string,
   name: string,
@@ -18,14 +18,14 @@ export async function generateContracts(
     await batch.add(async () => {
       console.log(`Generating contract ${principal}.${cname}`);
       await generateContractFromAbi({
-        apiHost: apiHost,
-        principal: principal,
+        apiHost: typeof apiHost === 'string' ? apiHost : apiHost(cname) ,
+        principal: typeof principal === 'string' ? principal : principal(cname),
         contractName: cname,
         output,
         packageName,
         contractOverwrites
       });
-      console.log(`Generated contract ${principal}.${cname}`);
+      console.log(`Generated contract ${typeof principal === 'string' ? principal : principal(cname)}.${cname}`);
     });
   }
   await batch.failFast();
