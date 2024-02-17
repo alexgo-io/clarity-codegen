@@ -16,7 +16,7 @@ export async function generateContracts(
   const batch = new YBatch({ concurrency: 16 });
   for (const cname of contracts) {
     await batch.add(async () => {
-      console.log(`Generating contract ${principal}.${cname}`);
+      console.log(`Generating contract ${typeof principal === 'string' ? principal : principal(cname)}.${cname}`);
       await generateContractFromAbi({
         apiHost: typeof apiHost === 'string' ? apiHost : apiHost(cname) ,
         principal: typeof principal === 'string' ? principal : principal(cname),
