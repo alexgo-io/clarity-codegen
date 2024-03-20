@@ -11,9 +11,11 @@ export async function generateContracts(
   output: string,
   name: string,
   packageName: string = "clarity-codegen",
-  contractOverwrites: {[from: string]: string} = {}
+  contractOverwrites: {[from: string]: string} = {},
+  options: {concurrency?: number} = {}
 ) {
-  const batch = new YBatch({ concurrency: 16 });
+  const concurrency = options.concurrency?? 16
+  const batch = new YBatch({ concurrency });
   for (const cname of contracts) {
     await batch.add(async () => {
       console.log(`Generating contract ${typeof principal === 'string' ? principal : principal(cname)}.${cname}`);

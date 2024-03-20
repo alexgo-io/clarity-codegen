@@ -18,6 +18,7 @@ import {
   isClarityAbiTuple,
 } from "./contractAbi";
 import { assertNever, mapValues } from "../utils/helpers";
+import { asyncAutoRetry } from "../utils/asyncAutoRetry";
 import axios from "axios";
 
 type TranscoderDefArgument = TranscoderDef | Record<string, TranscoderDef>;
@@ -32,7 +33,7 @@ const toTranscoderDef = ({
 }): { def: TranscoderDef } => {
   if (isClarityAbiPrimitive(type)) {
     if (type === "uint128") {
-      return {def: ["uintT"]};
+      return { def: ["uintT"] };
     } else if (type === "int128") {
       return { def: ["intT"] };
     } else if (type === "bool") {
@@ -258,10 +259,12 @@ export const generateContractFromAbi = async ({
   apiHost: string;
   output: string;
   packageName: string;
-  contractOverwrites: {[from: string]: string}
+  contractOverwrites: { [from: string]: string };
 }): Promise<void> => {
-  const url = `${apiHost}/v2/contracts/interface/${principal}/${contractOverwrites[contractName] ?? contractName}`;
-  const response = await axios.get(url);
+  const url = `${apiHost}/v2/contracts/interface/${principal}/${
+    contractOverwrites[contractName] ?? contractName
+  }`;
+  const response = await asyncAutoRetry(() => axios.get(url));
   const interfaceData: ClarityAbi = response.data;
   const defs = {} as Record<string, ContractEntryDescriptorDef>;
   for (const func of interfaceData.functions) {
