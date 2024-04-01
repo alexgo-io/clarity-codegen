@@ -1,7 +1,10 @@
+import axios from "axios";
 import * as fs from "fs";
 import { camelCase } from "lodash";
 import path from "path";
 import { inspect } from "util";
+import { asyncAutoRetry } from "../utils/asyncAutoRetry";
+import { assertNever, mapValues } from "../utils/helpers";
 import {
   ClarityAbi,
   ClarityAbiFunction,
@@ -17,9 +20,6 @@ import {
   isClarityAbiStringUtf8,
   isClarityAbiTuple,
 } from "./contractAbi";
-import { assertNever, mapValues } from "../utils/helpers";
-import { asyncAutoRetry } from "../utils/asyncAutoRetry";
-import axios from "axios";
 
 type TranscoderDefArgument = TranscoderDef | Record<string, TranscoderDef>;
 type TranscoderDef = [string, ...TranscoderDefArgument[]];
@@ -230,6 +230,16 @@ const toVariableDescriptorDef = (
   };
 };
 
+const toConstantDescriptorDef = (
+  entry: ClarityAbiVariable
+): ContractEntryDescriptorDef => {
+  return {
+    output: toTranscoderDef({ type: entry.type }).def,
+    input: ["noneT"],
+    mode: entry.access,
+  };
+};
+
 const toFunctionDescriptorDef = (
   func: ClarityAbiFunction
 ): void | ContractEntryDescriptorDef => {
@@ -275,8 +285,11 @@ export const generateContractFromAbi = async ({
     defs[mapEntry.name] = toMapEntryDescriptorDef(mapEntry);
   }
   for (const varEntry of interfaceData.variables) {
-    if (varEntry.access !== "variable") continue;
-    defs[varEntry.name] = toVariableDescriptorDef(varEntry);
+    if (varEntry.access === "variable") {
+      defs[varEntry.name] = toVariableDescriptorDef(varEntry);
+    } else if (varEntry.access === "constant") {
+      defs[varEntry.name] = toConstantDescriptorDef(varEntry);
+    }
   }
 
   const transcoderNames = getAllTranscoderName(

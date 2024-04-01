@@ -12,6 +12,12 @@ export type VariableDescriptor = {
   output: Transcoder<any>;
 };
 
+export type ConstantDescriptor = {
+  mode: "constant";
+  input: Transcoder<void>;
+  output: Transcoder<any>;
+};
+
 export type ReadonlyFunctionDescriptor = {
   mode: "readonly";
   input: readonly { name: string; type: Transcoder<any> }[];
@@ -27,6 +33,7 @@ export type OpenCallFunctionDescriptor = {
 export type ContractEntryDescriptor =
   | MapEntryDescriptor
   | VariableDescriptor
+  | ConstantDescriptor
   | ReadonlyFunctionDescriptor
   | OpenCallFunctionDescriptor;
 
