@@ -1,5 +1,7 @@
 import { Response } from "../runtime/types";
 
+export type StringOnly<T> = Extract<T, string>
+
 export function mapValues<T extends Record<string, any>, VO>(
   obj: T,
   mapping: <K extends keyof T>(value: T[K], key: K) => VO

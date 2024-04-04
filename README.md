@@ -45,32 +45,75 @@ import {
 Example:
 
 ```typescript
-import { ParameterObjOfDescriptor, processContractCall } from "clarity-codegen";
+import { callReadOnlyFunction } from "@stacks/transactions";
+import { tupleT, stringT } from "clarity-codegen";
 import { AlexContracts } from "./generated/contracts_Alex";
-import { Operation } from "./Operation";
 
-export type Contracts = typeof AlexContracts;
-export type ContractName = keyof Contracts;
-
-export const callPublic = <
-  T extends ContractName,
-  F extends keyof Contracts[T],
-  Descriptor extends Contracts[T][F]
->(
-  contractOrType: T,
-  functionName: F,
-  args: ParameterObjOfDescriptor<Descriptor>
-): Operation.PublicCall => {
-  const contractCall = processContractCall(
-    AlexContracts,
-    contractOrType,
-    functionName
-  );
-  const input = contractCall.encodeInput(args);
-  // Broadcast public contract or send readonly call
-  const output = contractCall.decodeOutput(response.output);
-  return output;
+/**
+ * Let's call a readonly function
+ */
+const contractDeployerAddress = "...";
+const contractName = "...";
+const readonlyFunctionName = "...";
+const readonlyFunctionArgs = {
+  /* ... */
 };
+const functionDescriptor = AlexContracts[contractName][readonlyFunctionName];
+const clarityArgs = functionDescriptor.input.map((arg) =>
+  arg.type.encode(readonlyFunctionArgs[arg.name])
+);
+const result = await callReadOnlyFunction({
+  contractName,
+  functionName: readonlyFunctionName,
+  functionArgs: clarityArgs,
+  contractAddress: contractDeployerAddress,
+  senderAddress: contractDeployerAddress,
+});
+console.log("result", functionDescriptor.output.decode(result));
+
+/**
+ * Let's simply encode/decode some clarity value
+ */
+const schema = tupleT({
+  hello: stringT,
+});
+const encoded = schema.encode({ hello: "world" });
+console.log("serialized clarityValue", encoded);
+console.log("deserialized clarityValue", schema.decode(encoded));
+```
+
+### Make contract calls
+
+```typescript
+import { makeContractCall, broadcastTransaction } from "@stacks/transactions";
+import { composeTxOptionsFactory, executeReadonlyCallFactory } from "clarity-codegen";
+import { AlexContracts } from "./generated/contracts_Alex";
+
+const composeTxOptions = composeTxOptionsFactory(AlexContracts, {
+  deployerAddress: "...",
+});
+const executeReadonlyCall = executeReadonlyCallFactory(AlexContracts, {
+  deployerAddress: "...",
+});
+
+// make a readonly call
+console.log("decoded readonly call result", await executeReadonlyCall({
+  "contract name",
+  "function name",
+  { /* arguments */ },
+}));
+
+// create a public call
+const txOptions = composeTxOptions({
+  "contract name",
+  "function name",
+  { /* arguments */ },
+  {
+    postConditions: [ /* post conditions */ ],
+  },
+});
+const tx = makeContractCall({ ...txOptions, senderKey: "..." });
+await broadcastTransaction(tx);
 ```
 
 ### Processing Historical Transactions
