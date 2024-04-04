@@ -21,8 +21,22 @@ import { assertNever, mapValues } from "../utils/helpers";
 import { asyncAutoRetry } from "../utils/asyncAutoRetry";
 import axios from "axios";
 
+type TranscoderDefType =
+  | "uintT"
+  | "intT"
+  | "booleanT"
+  | "principalT"
+  | "traitT"
+  | "noneT"
+  | "stringT"
+  | "stringAsciiT"
+  | "bufferT"
+  | "optionalT"
+  | "responseSimpleT"
+  | "listT"
+  | "tupleT";
 type TranscoderDefArgument = TranscoderDef | Record<string, TranscoderDef>;
-type TranscoderDef = [string, ...TranscoderDefArgument[]];
+type TranscoderDef = [TranscoderDefType, ...TranscoderDefArgument[]];
 
 const toTranscoderDef = ({
   name,
@@ -38,8 +52,10 @@ const toTranscoderDef = ({
       return { def: ["intT"] };
     } else if (type === "bool") {
       return { def: ["booleanT"] };
-    } else if (type === "principal" || type === "trait_reference") {
+    } else if (type === "principal") {
       return { def: ["principalT"] };
+    } else if (type === "trait_reference") {
+      return { def: ["traitT"] };
     } else if (type === "none") {
       return { def: ["noneT"] };
     } else {

@@ -14,7 +14,7 @@
   },
   "scripts": {
     "prepare": "pnpm run build",
-    "build": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json"
+    "build": "rm -rf lib && rm -rf dist && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json"
   },
   "exports": {
     ".": {

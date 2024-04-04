@@ -37,7 +37,7 @@ export const addressResult: Decoder<string> = (result) => {
   throw new Error(`Expected principal, got ${result.type}`);
 };
 
-export const contractResult: Decoder<string> = (result) => {
+export const contractResult: Decoder<`${string}.${string}`> = (result) => {
   if (result.type === ClarityType.PrincipalContract) {
     return `${addressToString(result.address)}.${result.contractName.content}`;
   }

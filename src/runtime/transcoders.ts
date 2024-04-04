@@ -1,7 +1,13 @@
-import {bufferCV, noneCV, stringAsciiCV, stringUtf8CV} from "@stacks/transactions";
+import {
+  bufferCV,
+  noneCV,
+  stringAsciiCV,
+  stringUtf8CV,
+} from "@stacks/transactions";
 import {
   boolResult,
   bufferResult,
+  contractResult,
   intResult,
   listDecoder,
   noneResult,
@@ -15,10 +21,12 @@ import {
   booleanCV,
   listEncoder,
   uintCV,
-  optional,
+  optionalEncoder,
   principalCV,
   responseSimpleEncoder,
-  tupleEncoder, intCV,
+  tupleEncoder,
+  intCV,
+  traitCV,
 } from "./encoders";
 import {
   Decoder,
@@ -71,6 +79,11 @@ export const principalT = transcoders({
   decode: principalResult,
 });
 
+export const traitT = transcoders({
+  encode: traitCV,
+  decode: contractResult,
+});
+
 export const listT = <T>(
   listItemTranscoder: Transcoder<T>
 ): Transcoder<T[]> => {
@@ -104,7 +117,7 @@ export const optionalT = <T>(
   someTranscoder: Transcoder<T>
 ): Transcoder<undefined | T> => {
   return transcoders({
-    encode: optional(someTranscoder.encode),
+    encode: optionalEncoder(someTranscoder.encode),
     decode: optionalDecoder(someTranscoder.decode),
   });
 };

@@ -64,13 +64,10 @@ export function principalCV(principal: string): PrincipalCV {
   }
 }
 
-export const traitCV = (val: string): ContractPrincipalCV => {
-  const [addr, name] = val.split(".");
-  if (addr && name) {
-    return contractPrincipalCV(addr, name);
-  }
-  throw new Error(`can not parse val as trait: ${val}`);
-};
+export function traitCV(principal: `${string}.${string}`): ContractPrincipalCV {
+  const [addr, name] = principal.split(".");
+  return contractPrincipalCV(addr, name);
+}
 
 export const booleanCV = (value: boolean): BooleanCV => {
   if (value) {
@@ -83,7 +80,9 @@ export const booleanCV = (value: boolean): BooleanCV => {
 export const uintCV: Encoder<bigint> = (input) => _uintCV(input);
 export const intCV: Encoder<bigint> = (input) => _intCV(input);
 
-export function optional<T>(encoder: Encoder<T>): Encoder<T | undefined> {
+export function optionalEncoder<T>(
+  encoder: Encoder<T>
+): Encoder<T | undefined> {
   return (value) => {
     if (value === undefined) {
       return noneCV();
