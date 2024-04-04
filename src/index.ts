@@ -4,4 +4,6 @@ export * from "./runtime/decoders";
 export * from "./runtime/encoders";
 export * from "./runtime/decodeContractCallTransaction";
 export * from "./runtime/types";
+export * from "./runtime/composeTxOptions";
+export * from "./runtime/executeReadonlyCall";
 export * from "./utils/helpers";
