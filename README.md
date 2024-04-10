@@ -21,19 +21,33 @@ Alternatively, you can run codegen in JavaScript:
 ```typescript
 import { generateContracts } from "clarity-codegen/lib/generate";
 import * as path from "path";
-import {
-  contracts,
-  DEPLOYER_ACCOUNT_ADDRESS,
-  STACKS_API_URL,
-} from "../constants";
+
+const STACKS_API_URL = "https://api.hiro.so";
+const DEPLOYER_ACCOUNT_ADDRESS = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9";
+
+const alexContracts = [
+  "age000-governance-token",
+]
+
+const xlinkContracts = [
+  "token-abtc",
+  "btc-bridge-endpoint-v...",
+]
 
 (async function main() {
   await generateContracts(
-    STACKS_API_URL(),
-    DEPLOYER_ACCOUNT_ADDRESS(),
-    contracts,
+    STACKS_API_URL,
+    DEPLOYER_ACCOUNT_ADDRESS,
+    alexContracts,
     path.resolve(__dirname, "./generated/"),
-    "Alex"
+    "alex"
+  );
+  await generateContracts(
+    STACKS_API_URL,
+    DEPLOYER_ACCOUNT_ADDRESS,
+    xlinkContracts,
+    path.resolve(__dirname, "./generated/"),
+    "xlink"
   );
 })().catch(console.error);
 ```

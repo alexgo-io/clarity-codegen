@@ -262,19 +262,21 @@ const toFunctionDescriptorDef = (
 };
 
 export const generateContractFromAbi = async ({
+  projectName,
   contractName,
   principal,
   apiHost,
-  output,
-  packageName,
+  outputDir: output,
+  runtimePackagePath,
   contractOverwrites,
 }: {
+  projectName: string;
   contractName: string;
   aliasContractName?: string;
   principal: string;
   apiHost: string;
-  output: string;
-  packageName: string;
+  outputDir: string;
+  runtimePackagePath: string;
   contractOverwrites: { [from: string]: string };
 }): Promise<void> => {
   const url = `${apiHost}/v2/contracts/interface/${principal}/${
@@ -314,7 +316,7 @@ export const generateContractFromAbi = async ({
 import {
 defineContract,
 ${transcoderNames.join(",\n")}
-} from "${packageName}"
+} from "${runtimePackagePath}"
 
 export const ${camelCase(contractName)} = defineContract({
 "${contractName}": ${inspect(
@@ -348,34 +350,47 @@ export const ${camelCase(contractName)} = defineContract({
 `;
 
   fs.writeFileSync(
-    path.resolve(output, `./contract_${contractName}.ts`),
+    path.resolve(
+      output,
+      `./${getContractFileName(projectName, contractName)}.ts`
+    ),
     source
   );
 };
 
 export const contractGenerator = async ({
   contracts,
-  name,
-  output,
-  packageName,
+  projectName,
+  outputDir,
+  runtimePackagePath,
 }: {
   contracts: string[];
-  name: string;
-  output: string;
-  packageName: string;
+  projectName: string;
+  outputDir: string;
+  runtimePackagePath: string;
 }): Promise<void> => {
   const importsObjects = contracts.map((n) => `...${camelCase(n)}`);
   const importsHeaders = contracts.map(
-    (n) => `import { ${camelCase(n)} } from "./contract_${n}"`
+    (n) =>
+      `import { ${camelCase(n)} } from "./${getContractFileName(
+        projectName,
+        n
+      )}"`
   );
-  const code = `import { defineContract } from "${packageName}";
+  const code = `import { defineContract } from "${runtimePackagePath}";
 ${importsHeaders.join("\n")}
 
-export const ${name}Contracts = defineContract({
+export const ${projectName}Contracts = defineContract({
 ${importsObjects.join(",\n")}
 });
 
   `; /*? */
 
-  fs.writeFileSync(path.resolve(output, `./contracts_${name}.ts`), code);
+  fs.writeFileSync(
+    path.resolve(outputDir, `./contracts_${projectName}.ts`),
+    code
+  );
 };
+
+const getContractFileName = (projectName: string, contractName: string) =>
+  `contract_${projectName}_${contractName}`;

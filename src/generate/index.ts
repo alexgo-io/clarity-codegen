@@ -8,34 +8,43 @@ export async function generateContracts(
   apiHost: string | ((contract: string) => string),
   principal: string | ((contract: string) => string),
   contracts: string[],
-  output: string,
-  name: string,
-  packageName: string = "clarity-codegen",
-  contractOverwrites: {[from: string]: string} = {},
-  options: {concurrency?: number} = {}
+  outputDir: string,
+  projectName: string,
+  runtimePackagePath: string = "clarity-codegen",
+  contractOverwrites: { [from: string]: string } = {},
+  options: { concurrency?: number } = {}
 ) {
-  const concurrency = options.concurrency?? 16
+  const concurrency = options.concurrency ?? 16;
   const batch = new YBatch({ concurrency });
   for (const cname of contracts) {
     await batch.add(async () => {
-      console.log(`Generating contract ${typeof principal === 'string' ? principal : principal(cname)}.${cname}`);
+      console.log(
+        `Generating contract ${
+          typeof principal === "string" ? principal : principal(cname)
+        }.${cname}`
+      );
       await generateContractFromAbi({
-        apiHost: typeof apiHost === 'string' ? apiHost : apiHost(cname) ,
-        principal: typeof principal === 'string' ? principal : principal(cname),
+        apiHost: typeof apiHost === "string" ? apiHost : apiHost(cname),
+        principal: typeof principal === "string" ? principal : principal(cname),
+        projectName,
         contractName: cname,
-        output,
-        packageName,
-        contractOverwrites
+        outputDir,
+        runtimePackagePath,
+        contractOverwrites,
       });
-      console.log(`Generated contract ${typeof principal === 'string' ? principal : principal(cname)}.${cname}`);
+      console.log(
+        `Generated contract ${
+          typeof principal === "string" ? principal : principal(cname)
+        }.${cname}`
+      );
     });
   }
   await batch.failFast();
 
   await contractGenerator({
-    contracts: contracts,
-    output: output,
-    name,
-    packageName,
+    contracts,
+    outputDir,
+    projectName,
+    runtimePackagePath,
   });
 }
