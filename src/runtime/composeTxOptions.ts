@@ -1,7 +1,8 @@
 import {
   AnchorMode,
-  ContractCallOptions,
+  ClarityValue,
   FungiblePostCondition,
+  PostCondition,
   PostConditionMode,
   STXPostCondition,
 } from "@stacks/transactions";
@@ -11,6 +12,16 @@ import {
   OpenCallFunctionDescriptor,
   ParameterObjOfDescriptor,
 } from "./contractBase";
+
+export interface ContractCallOptions {
+    contractAddress: string;
+    contractName: string;
+    functionName: string;
+    functionArgs: ClarityValue[];
+    anchorMode: AnchorMode;
+    postConditionMode: PostConditionMode;
+    postConditions?: PostCondition[];
+}
 
 export type ComposeTxOptionsFn<Contracts extends ContractBaseType> = <
   T extends StringOnly<keyof Contracts>,
