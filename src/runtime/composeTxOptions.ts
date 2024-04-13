@@ -14,13 +14,13 @@ import {
 } from "./contractBase";
 
 export interface ContractCallOptions {
-    contractAddress: string;
-    contractName: string;
-    functionName: string;
-    functionArgs: ClarityValue[];
-    anchorMode: AnchorMode;
-    postConditionMode: PostConditionMode;
-    postConditions?: PostCondition[];
+  contractAddress: string;
+  contractName: string;
+  functionName: string;
+  functionArgs: ClarityValue[];
+  anchorMode: AnchorMode;
+  postConditionMode: PostConditionMode;
+  postConditions?: PostCondition[];
 }
 
 export type ComposeTxOptionsFn<Contracts extends ContractBaseType> = <
@@ -34,6 +34,7 @@ export type ComposeTxOptionsFn<Contracts extends ContractBaseType> = <
     ? ParameterObjOfDescriptor<Descriptor>
     : never,
   options?: {
+    deployerAddress?: string;
     postConditions?: (FungiblePostCondition | STXPostCondition)[];
   }
 ) => ContractCallOptions;
@@ -42,7 +43,7 @@ export const composeTxOptionsFactory =
   <T extends ContractBaseType>(
     contracts: T,
     factoryOptions: {
-      deployerAddress: string;
+      deployerAddress?: string;
     }
   ): ComposeTxOptionsFn<T> =>
   (contractName, functionName, args, options = {}) => {
@@ -50,7 +51,7 @@ export const composeTxOptionsFactory =
 
     if (functionDescriptor.mode !== "public") {
       throw new Error(
-        `[composeTx] function ${contractName}.${functionName} should be a public function`
+        `[composeTxOptionsFactory] function ${contractName}.${functionName} should be a public function`
       );
     }
 
@@ -64,11 +65,17 @@ export const composeTxOptionsFactory =
         : PostConditionMode.Deny;
     const postConditions = options.postConditions;
 
+    const deployerAddress =
+      options.deployerAddress ?? factoryOptions.deployerAddress;
+    if (deployerAddress == null) {
+      throw new Error(`[composeTxOptionsFactory] deployer address required`);
+    }
+
     return {
+      contractAddress: deployerAddress,
       contractName,
       functionName,
       functionArgs: clarityArgs,
-      contractAddress: factoryOptions.deployerAddress,
       anchorMode: AnchorMode.Any,
       postConditionMode,
       postConditions,

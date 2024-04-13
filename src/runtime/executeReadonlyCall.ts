@@ -20,6 +20,7 @@ export type ExecuteReadonlyCallFn<Contracts extends ContractBaseType> = <
     ? ParameterObjOfDescriptor<Descriptor>
     : never,
   options?: {
+    deployerAddress?: string;
     senderAddress?: string;
     callReadOnlyFunction?: CallReadOnlyFunctionFn;
   }
@@ -33,7 +34,7 @@ export const executeReadonlyCallFactory =
   <T extends ContractBaseType>(
     contracts: T,
     factoryOptions: {
-      deployerAddress: string;
+      deployerAddress?: string;
       defaultSenderAddress?: string;
       callReadOnlyFunction?: CallReadOnlyFunctionFn;
     }
@@ -51,10 +52,16 @@ export const executeReadonlyCallFactory =
       arg.type.encode(args[arg.name])
     );
 
+    const deployerAddress =
+      options.deployerAddress ?? factoryOptions.defaultSenderAddress;
+    if (deployerAddress == null) {
+      throw new Error(`[composeTxOptionsFactory] deployer address required`);
+    }
+
     const senderAddress =
       options.senderAddress ??
       factoryOptions.defaultSenderAddress ??
-      factoryOptions.deployerAddress;
+      deployerAddress;
 
     const _callReadOnlyFunction =
       options.callReadOnlyFunction ??
@@ -65,7 +72,7 @@ export const executeReadonlyCallFactory =
       contractName,
       functionName,
       functionArgs: clarityArgs,
-      contractAddress: factoryOptions.deployerAddress,
+      contractAddress: deployerAddress,
       senderAddress,
     });
 
