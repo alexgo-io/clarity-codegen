@@ -20,6 +20,7 @@ import {
 import { assertNever, mapValues } from "../utils/helpers";
 import { asyncAutoRetry } from "../utils/asyncAutoRetry";
 import axios from "axios";
+import { AxiosError } from "axios";
 
 type TranscoderDefType =
   | "uintT"
@@ -282,7 +283,14 @@ export const generateContractFromAbi = async ({
   const url = `${apiHost}/v2/contracts/interface/${principal}/${
     contractOverwrites[contractName] ?? contractName
   }`;
-  const response = await asyncAutoRetry(() => axios.get(url));
+  const response = await asyncAutoRetry(() => axios.get(url), {
+    isNeedRetry: (error) => {
+      if (axios.isAxiosError(error) && error.response?.status === 429) {
+        return true;
+      }
+      return false;
+    },
+  });
   const interfaceData: ClarityAbi = response.data;
   const defs = {} as Record<string, ContractEntryDescriptorDef>;
   for (const func of interfaceData.functions) {
