@@ -1,13 +1,13 @@
 import {
   AnchorMode,
-  ClarityValue,
-  FungiblePostCondition,
-  PostCondition,
+  type ClarityValue,
+  type FungiblePostCondition,
+  type PostCondition,
   PostConditionMode,
-  STXPostCondition,
+  type StxPostCondition,
 } from "@stacks/transactions";
-import { StringOnly } from "../utils/helpers";
-import {
+import type { StringOnly } from "../utils/helpers";
+import type {
   ContractBaseType,
   OpenCallFunctionDescriptor,
   ParameterObjOfDescriptor,
@@ -35,7 +35,7 @@ export type ComposeTxOptionsFn<Contracts extends ContractBaseType> = <
     : never,
   options?: {
     deployerAddress?: string;
-    postConditions?: (FungiblePostCondition | STXPostCondition)[];
+    postConditions?: (FungiblePostCondition | StxPostCondition)[];
   }
 ) => ContractCallOptions;
 
@@ -68,7 +68,7 @@ export const composeTxOptionsFactory =
     const deployerAddress =
       options.deployerAddress ?? factoryOptions.deployerAddress;
     if (deployerAddress == null) {
-      throw new Error(`[composeTxOptionsFactory] deployer address required`);
+      throw new Error("[composeTxOptionsFactory] deployer address required");
     }
 
     return {

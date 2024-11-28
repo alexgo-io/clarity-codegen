@@ -59,7 +59,7 @@ const xlinkContracts = [
 Example:
 
 ```typescript
-import { callReadOnlyFunction } from "@stacks/transactions";
+import { fetchReadOnlyFunction } from "@stacks/transactions";
 import { tupleT, stringT } from "clarity-codegen";
 import { AlexContracts } from "./generated/contracts_Alex";
 
@@ -76,7 +76,7 @@ const functionDescriptor = AlexContracts[contractName][readonlyFunctionName];
 const clarityArgs = functionDescriptor.input.map((arg) =>
   arg.type.encode(readonlyFunctionArgs[arg.name])
 );
-const result = await callReadOnlyFunction({
+const result = await fetchReadOnlyFunction({
   contractName,
   functionName: readonlyFunctionName,
   functionArgs: clarityArgs,

@@ -3,6 +3,7 @@ import {
   ClarityType,
   ClarityValue,
 } from "@stacks/transactions";
+import {hexToBytes} from '@stacks/common'
 import { Decoder, Response, UnboxDecoder } from "./types";
 
 export class ClarityError extends Error {
@@ -32,21 +33,21 @@ export const principalResult: Decoder<string> = (result) => {
 
 export const addressResult: Decoder<string> = (result) => {
   if (result.type === ClarityType.PrincipalStandard) {
-    return addressToString(result.address);
+    return result.value;
   }
   throw new Error(`Expected principal, got ${result.type}`);
 };
 
 export const contractResult: Decoder<`${string}.${string}`> = (result) => {
   if (result.type === ClarityType.PrincipalContract) {
-    return `${addressToString(result.address)}.${result.contractName.content}`;
+    return result.value;
   }
   throw new Error(`Expected principal, got ${result.type}`);
 };
 
 export const intResult: Decoder<bigint> = (result) => {
   if (result.type === ClarityType.Int || result.type === ClarityType.UInt) {
-    return result.value;
+    return BigInt(result.value);
   }
   throw new Error(`Expected integer, got ${result.type}`);
 };
@@ -56,14 +57,14 @@ export const stringResult: Decoder<string> = (result) => {
     result.type === ClarityType.StringASCII ||
     result.type === ClarityType.StringUTF8
   ) {
-    return result.data;
+    return result.value;
   }
   throw new Error(`Expected string, got ${result.type}`);
 };
 
 export const bufferResult: Decoder<Uint8Array> = (result) => {
   if (result.type === ClarityType.Buffer) {
-    return result.buffer;
+    return hexToBytes(result.value);
   }
   throw new Error(`Expected buffer, got ${result.type}`);
 };
@@ -73,7 +74,7 @@ export const defaultErrorDecoder: Decoder<Error> = (value: ClarityValue) => {
     value.type === ClarityType.StringASCII ||
     value.type === ClarityType.StringUTF8
   ) {
-    return new Error(value.data);
+    return new Error(value.value);
   }
   if (value.type === ClarityType.UInt || value.type === ClarityType.Int) {
     return new ClarityError(Number(value.value));
@@ -110,7 +111,8 @@ export function optionalDecoder<T>(
   return (value) => {
     if (value.type === ClarityType.OptionalNone) {
       return undefined;
-    } else if (value.type === ClarityType.OptionalSome) {
+    }
+    if (value.type === ClarityType.OptionalSome) {
       return decoder(value.value);
     }
     return decoder(value);
@@ -135,7 +137,7 @@ export function tupleDecoder<P extends Record<string, Decoder<any>>>(
     }
     const result = {} as any;
     for (const key of Object.keys(decorators)) {
-      result[key] = decorators[key as keyof P]!(input.data[key]!);
+      result[key] = decorators[key as keyof P]!(input.value[key]!);
     }
     return result;
   };
@@ -144,7 +146,7 @@ export function tupleDecoder<P extends Record<string, Decoder<any>>>(
 export function listDecoder<T>(decoder: Decoder<T>): Decoder<T[]> {
   return (value) => {
     if (value.type === ClarityType.List) {
-      return value.list.map(decoder);
+      return value.value.map(decoder);
     }
     throw new Error(`Expected list, got ${value.type}`);
   };

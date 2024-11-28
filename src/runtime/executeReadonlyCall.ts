@@ -1,13 +1,13 @@
-import { callReadOnlyFunction } from "@stacks/transactions";
-import { StringOnly } from "../utils/helpers";
-import {
+import { fetchCallReadOnlyFunction } from "@stacks/transactions";
+import type { StringOnly } from "../utils/helpers";
+import type {
   ContractBaseType,
   ParameterObjOfDescriptor,
   ReadonlyFunctionDescriptor,
   ReturnTypeOfDescriptor,
 } from "./contractBase";
 
-export type CallReadOnlyFunctionFn = typeof callReadOnlyFunction;
+export type CallReadOnlyFunctionFn = typeof fetchCallReadOnlyFunction;
 
 export type ExecuteReadonlyCallFn<Contracts extends ContractBaseType> = <
   T extends StringOnly<keyof Contracts>,
@@ -66,7 +66,7 @@ export const executeReadonlyCallFactory =
     const _callReadOnlyFunction =
       options.callReadOnlyFunction ??
       factoryOptions.callReadOnlyFunction ??
-      callReadOnlyFunction;
+      fetchCallReadOnlyFunction;
 
     const result = await _callReadOnlyFunction({
       contractName,
