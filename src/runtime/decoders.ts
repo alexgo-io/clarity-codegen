@@ -25,7 +25,8 @@ export const boolResult: Decoder<boolean> = (result) => {
 export const principalResult: Decoder<string> = (result) => {
   if (result.type === ClarityType.PrincipalStandard) {
     return addressResult(result);
-  } else if (result.type === ClarityType.PrincipalContract) {
+  }
+  if (result.type === ClarityType.PrincipalContract) {
     return contractResult(result);
   }
   throw new Error(`Expected principal, got ${result.type}`);
