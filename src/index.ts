@@ -6,4 +6,5 @@ export * from "./runtime/decodeContractCallTransaction";
 export * from "./runtime/types";
 export * from "./runtime/composeTxOptions";
 export * from "./runtime/executeReadonlyCall";
+export * from "./runtime/getMapEntry";
 export * from "./utils/helpers";

@@ -44,7 +44,7 @@ export const executeReadonlyCallFactory =
 
     if (functionDescriptor.mode !== "readonly") {
       throw new Error(
-        `[composeTx] function ${contractName}.${functionName} should be a readonly function`
+        `[executeReadonlyCall] function ${contractName}.${functionName} should be a readonly function`
       );
     }
 
@@ -55,7 +55,7 @@ export const executeReadonlyCallFactory =
     const deployerAddress =
       options.deployerAddress ?? factoryOptions.defaultSenderAddress;
     if (deployerAddress == null) {
-      throw new Error(`[composeTxOptionsFactory] deployer address required`);
+      throw new Error(`[executeReadonlyCall] deployer address required`);
     }
 
     const senderAddress =

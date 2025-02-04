@@ -34,13 +34,13 @@
     }
   },
   "devDependencies": {
-    "@stacks/transactions": "^7.0.2",
     "@stacks/common": "^7.0.2",
+    "@stacks/transactions": "^7.0.2",
     "@types/lodash": "^4.14.194",
     "@types/node": "^20.1.5",
     "@types/yargs": "^17.0.24",
     "prettier": "^2.8.8",
-    "typescript": "^5.0.4"
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "@stacks/stacks-blockchain-api-types": "^7.1.10",
@@ -50,7 +50,7 @@
     "yqueue": "^1.0.1"
   },
   "peerDependencies": {
-    "@stacks/transactions": "^7.0.2",
-    "@stacks/common": "^7.0.2"
+    "@stacks/common": "^7.0.2",
+    "@stacks/transactions": "^7.0.2"
   }
 }
