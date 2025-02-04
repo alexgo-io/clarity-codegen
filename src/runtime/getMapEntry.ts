@@ -48,7 +48,8 @@ export const getMapEntryFactory =
 
     const clarityMapKey = descriptor.input.encode(mapKey);
 
-    const deployerAddress = options.deployerAddress;
+    const deployerAddress =
+      options.deployerAddress ?? factoryOptions.deployerAddress;
     if (deployerAddress == null) {
       throw new Error(`[getMapEntry] deployer address required`);
     }

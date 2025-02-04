@@ -53,7 +53,7 @@ export const executeReadonlyCallFactory =
     );
 
     const deployerAddress =
-      options.deployerAddress ?? factoryOptions.defaultSenderAddress;
+      options.deployerAddress ?? factoryOptions.deployerAddress;
     if (deployerAddress == null) {
       throw new Error(`[executeReadonlyCall] deployer address required`);
     }
