@@ -2,9 +2,10 @@ import {
   AnchorMode,
   type ClarityValue,
   type FungiblePostCondition,
-  type PostCondition,
+  type FungiblePostConditionWire,
   PostConditionMode,
   type StxPostCondition,
+  type STXPostConditionWire,
 } from "@stacks/transactions";
 import type { StringOnly } from "../utils/helpers";
 import type {
@@ -12,6 +13,12 @@ import type {
   OpenCallFunctionDescriptor,
   ParameterObjOfDescriptor,
 } from "./contractBase";
+
+type PostCondition =
+  | FungiblePostCondition
+  | StxPostCondition
+  | FungiblePostConditionWire
+  | STXPostConditionWire;
 
 export interface ContractCallOptions {
   contractAddress: string;
@@ -35,7 +42,7 @@ export type ComposeTxOptionsFn<Contracts extends ContractBaseType> = <
     : never,
   options?: {
     deployerAddress?: string;
-    postConditions?: (FungiblePostCondition | StxPostCondition)[];
+    postConditions?: PostCondition[];
   }
 ) => ContractCallOptions;
 
