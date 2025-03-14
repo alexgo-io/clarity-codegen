@@ -14,26 +14,25 @@ import type {
   ParameterObjOfDescriptor,
 } from "./contractBase";
 
-type PostCondition =
-  | FungiblePostCondition
-  | StxPostCondition
-  | FungiblePostConditionWire
-  | STXPostConditionWire;
+type PostConditionPlain = FungiblePostCondition | StxPostCondition;
+type PostConditionWire = FungiblePostConditionWire | STXPostConditionWire;
+type PostCondition = PostConditionPlain | PostConditionWire;
 
-export interface ContractCallOptions {
+export interface ContractCallOptions<PC extends PostCondition> {
   contractAddress: string;
   contractName: string;
   functionName: string;
   functionArgs: ClarityValue[];
   anchorMode: AnchorMode;
   postConditionMode: PostConditionMode;
-  postConditions?: PostCondition[];
+  postConditions?: PC[];
 }
 
 export type ComposeTxOptionsFn<Contracts extends ContractBaseType> = <
   T extends StringOnly<keyof Contracts>,
   F extends StringOnly<keyof Contracts[T]>,
-  Descriptor extends Contracts[T][F]
+  Descriptor extends Contracts[T][F],
+  PC extends PostCondition
 >(
   contractName: T,
   functionName: F,
@@ -42,9 +41,9 @@ export type ComposeTxOptionsFn<Contracts extends ContractBaseType> = <
     : never,
   options?: {
     deployerAddress?: string;
-    postConditions?: PostCondition[];
+    postConditions?: PC[];
   }
-) => ContractCallOptions;
+) => ContractCallOptions<PC>;
 
 export const composeTxOptionsFactory =
   <T extends ContractBaseType>(
